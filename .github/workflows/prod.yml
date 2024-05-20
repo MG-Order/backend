@@ -7,9 +7,6 @@ on:
 
 env:
   NODE_VERSION: 20
-  AWS_REGION: ap-northeast-2
-  ECR_REGISTRY: 769733811145.dkr.ecr.ap-northeast-2.amazonaws.com/mgorder
-  ECR_REPOSITORY: mgorder
 
 jobs:
   build:
@@ -37,7 +34,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm install
 
       - name: Prettier Check
         run: npm run format
@@ -53,15 +50,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ap-northeast-2
 
       - name: Login to Amazon ECR
-        run: |
-          aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 769733811145.dkr.ecr.ap-northeast-2.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag and push image to Amazone ECR
         id: build-image
