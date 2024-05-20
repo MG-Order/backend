@@ -7,6 +7,9 @@ on:
 
 env:
   NODE_VERSION: 20
+  AWS_REGION: ap-northeast-2
+  ECR_REGISTRY: 769733811145.dkr.ecr.ap-northeast-2.amazonaws.com/mgorder
+  ECR_REPOSITORY: mgorder
 
 jobs:
   build:
@@ -19,6 +22,8 @@ jobs:
 
       - name: Install NodeJS
         uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache Dependencies
         id: cache
@@ -48,11 +53,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ap-northeast-2
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag and push image to Amazone ECR
         id: build-image
