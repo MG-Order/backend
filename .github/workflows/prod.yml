@@ -14,13 +14,6 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Config AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ap-northeast-2
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -50,9 +43,16 @@ jobs:
       - name: Unit Test
         run: npm run test
 
+      - name: Config AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-2
+
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag and push image to Amazone ECR
         id: build-image
